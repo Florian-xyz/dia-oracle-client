@@ -7,7 +7,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
-import xyz.ttm.dia.constant.DiaConstant;
+import xyz.ttm.dia.constant.RestConstant;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ public class DiaServiceImpl implements DiaService {
         List<Future> futurs = new ArrayList<>();
 
         for (String asset : assets) {
-            String assetPriceEndpoint = DiaConstant.API_REST_URL + DiaConstant.ENDPOINT_PRICE + asset;
+            String assetPriceEndpoint = RestConstant.API_REST_URL + RestConstant.ENDPOINT_PRICE + asset;
             futurs.add(webClient.getAbs(assetPriceEndpoint).send());
         }
 
@@ -37,10 +37,10 @@ public class DiaServiceImpl implements DiaService {
                 .compose(compositeFuture -> {
                     Map<String, Double> prices = new HashMap<>();
                     for (HttpResponse<JsonObject> result : compositeFuture.<HttpResponse<JsonObject>>list()) {
-                        if(result.statusCode() == HttpResponseStatus.OK.code()){
+                        if (result.statusCode() == HttpResponseStatus.OK.code()) {
                             JsonObject response = result.bodyAsJsonObject();
-                            String asset = response.getString(DiaConstant.JSON_KEY_SYMBOL);
-                            prices.put(asset, response.getDouble(DiaConstant.JSON_KEY_PRICE));
+                            String asset = response.getString(RestConstant.JSON_KEY_SYMBOL);
+                            prices.put(asset, response.getDouble(RestConstant.JSON_KEY_PRICE));
                         }
                     }
                     return Future.succeededFuture(prices);
